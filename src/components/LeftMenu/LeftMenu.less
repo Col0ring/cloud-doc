@@ -1,0 +1,16 @@
+.left-menu-container {
+  width: 100%;
+  min-height: 100%;
+  height: calc(100vh - 10px);
+
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  .file-list-container {
+    flex: 1;
+    overflow: hidden;
+    &:hover {
+      overflow: auto;
+    }
+  }
+}
