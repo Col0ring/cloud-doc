@@ -3,9 +3,10 @@ import { Row, Col } from 'antd'
 import { v4 as uuid } from 'uuid'
 import RightEditor from '@/components/RightEditor/RightEditor'
 import LeftMenu from '@/components/LeftMenu/LeftMenu'
+import GlobalFileSearch from '@/components/GlobalFileSearch/GlobalFileSearch'
 import { flattenArr, obj2Arr, getParentNode } from '@/utils/help'
 import fileHelper from '@/utils/fileHelper'
-import { saveFiles2Store, fileStore } from '@/utils/store'
+import { saveFiles2Store, fileStore, settingsStore } from '@/utils/store'
 import useContextMenu from '@/hooks/useContextMenu'
 import useIpcRenderer from '@/hooks/useIpcRenderer'
 import './App.less'
@@ -13,6 +14,7 @@ const { join, basename, extname, dirname } = window.require('path')
 const { remote } = window.require('electron')
 
 function App() {
+  const [globalSearcVisible, setGlobalSearcVisible] = useState(false)
   const [searchText, setSearchText] = useState('')
   const [files, setFiles] = useState(fileStore.get('files') || {})
   const [searchFiles, setSearchFiles] = useState(fileStore.get('files') || {})
@@ -24,7 +26,8 @@ function App() {
   const filesArr = obj2Arr(files)
   const searchFilesArr = obj2Arr(searchFiles)
   const openedFiles = openedFileIds.map((openedId) => files[openedId])
-  const savedLocation = remote.app.getPath('documents')
+  const savedLocation =
+    settingsStore.get('savedFileLocation') || remote.app.getPath('documents')
 
   const onCreateFile = () => {
     const newId = uuid()
@@ -71,12 +74,21 @@ function App() {
   }
 
   const onSearch = (val, setLoading) => {
+    if (setSearchText === val) {
+      return
+    }
     setLoading(true)
+
+    setSearchText(val)
     const newFiles = flattenArr(
       filesArr.filter((file) => file.name.includes(val))
     )
     setSearchFiles(newFiles)
     setLoading(false)
+  }
+
+  const onGlobalSearchCancel = () => {
+    setGlobalSearcVisible(false)
   }
 
   const onFileClick = useCallback(
@@ -241,7 +253,10 @@ function App() {
   useIpcRenderer({
     'create-new-file': onCreateFile,
     'import-file': onImportFiles,
-    'save-edit-file': onEditorSave
+    'save-edit-file': onEditorSave,
+    'search-file': () => {
+      setGlobalSearcVisible(true)
+    }
   })
 
   return (
@@ -274,6 +289,11 @@ function App() {
           />
         </Col>
       </Row>
+      <GlobalFileSearch
+        onSearch={onSearch}
+        visible={globalSearcVisible}
+        onCancel={onGlobalSearchCancel}
+      />
     </div>
   )
 }
