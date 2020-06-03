@@ -33,7 +33,7 @@ function App() {
       isNew: true,
       name: '',
       content: '',
-      createdAt: new Date().getTime()
+      createdAt: new Date().getTime(),
     }
 
     setFiles({ ...files, [newId]: newFile })
@@ -46,7 +46,7 @@ function App() {
       const res = await remote.dialog.showOpenDialog({
         title: '请选择要导入的 Markdown 文件',
         properties: ['openFile', 'multiSelections'],
-        filters: [{ name: 'Markdown Files', extensions: ['md'] }]
+        filters: [{ name: 'Markdown Files', extensions: ['md'] }],
       })
       if (res.filePaths.length > 0) {
         const filterPaths = res.filePaths.filter((path) => {
@@ -55,7 +55,7 @@ function App() {
         const importFilesArr = filterPaths.map((path) => ({
           id: uuid(),
           name: basename(path, extname(path)),
-          path
+          path,
         }))
         const newFiles = { ...files, ...flattenArr(importFilesArr) }
         setFiles(newFiles)
@@ -209,7 +209,7 @@ function App() {
           if (pareentElement) {
             onFileClick(pareentElement.dataset.id)
           }
-        }
+        },
       },
       {
         label: '重命名',
@@ -221,7 +221,7 @@ function App() {
           if (pareentElement) {
             setEditingId(pareentElement.dataset.id)
           }
-        }
+        },
       },
       {
         label: '删除',
@@ -233,19 +233,19 @@ function App() {
           if (pareentElement) {
             onFileDelete(pareentElement.dataset.id)
           }
-        }
-      }
+        },
+      },
     ],
     '.file-list'
   )
   useIpcRenderer({
     'create-new-file': onCreateFile,
     'import-file': onImportFiles,
-    'save-edit-file': onEditorSave
+    'save-edit-file': onEditorSave,
   })
 
   return (
-    <div className='App'>
+    <div className="App">
       <Row>
         <Col span={6}>
           <LeftMenu
