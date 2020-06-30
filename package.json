@@ -4,26 +4,29 @@
   "private": true,
   "main": "./main.js",
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "antd": "^4.2.0",
-    "classnames": "^2.2.6",
-    "electron-store": "^5.1.1",
-    "normalize.css": "^8.0.1",
-    "qiniu": "^7.3.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "react-simplemde-editor": "^4.1.1",
-    "uuid": "^8.0.0"
+    "electron-store": "^5.1.1"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none react-app-rewired start\"",
+    "build": "react-app-rewired build && node ./config/webpack.config.js",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
-    "dev": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none yarn start\""
+    "prepack": "npm run build",
+    "pack": "electron-builder --dir"
+  },
+  "homepage": "./",
+  "build": {
+    "appId": "testId",
+    "productName": "cloud-doc",
+    "files": [
+      "build/**/*"
+    ],
+    "extraMetadata": {
+      "main": "./build/main.js"
+    },
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -41,11 +44,23 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "antd": "^4.2.0",
+    "classnames": "^2.2.6",
+    "normalize.css": "^8.0.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1",
+    "react-simplemde-editor": "^4.1.1",
+    "uuid": "^8.0.0",
     "babel-plugin-import": "^1.13.0",
     "concurrently": "^5.1.0",
     "cross-env": "^7.0.2",
     "customize-cra": "^1.0.0",
     "electron": "^8.2.1",
+    "electron-builder": "^22.7.0",
     "electron-is-dev": "^1.2.0",
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
